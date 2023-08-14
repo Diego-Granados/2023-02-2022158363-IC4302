@@ -1,4 +1,4 @@
-# Apuntes 1: Viernes 7 de agosto
+# Apuntes 1: Viernes 11 de agosto
 
 ### Diego Granados Retana 2022158363
 
