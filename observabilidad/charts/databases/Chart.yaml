@@ -37,10 +37,12 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: mongodb.enabled
   - name: "postgresql-ha"
+    alias: postgresqlha
     version: "11.1.2"
     repository: https://charts.bitnami.com/bitnami
     condition: postgresqlha.enabled
   - name: "mariadb-galera"
+    alias: mariadbgal
     version: "7.4.14"
     repository: https://charts.bitnami.com/bitnami
     condition: mariadbgal.enabled

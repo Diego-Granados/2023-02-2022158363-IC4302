@@ -13,18 +13,18 @@ elasticsearch:
       enabled: false
       namespace: "monitoring"
 mongodb:
-  enabled: false
+  enabled: true
   metrics:
-    enabled: false
+    enabled: true
     serviceMonitor:
-      enabled: false
+      enabled: true
       namespace: "monitoring"
 postgresqlha:
-  enabled: false
+  enabled: true
   metrics:
-    enabled: false
+    enabled: true
     serviceMonitor:
-      enabled: false
+      enabled: true
       namespace: "monitoring"
 mariadbgal:
   enabled: true
