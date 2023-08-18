@@ -1,0 +1,35 @@
+mariadb:
+  enabled: false
+  metrics:
+    enabled: false
+    serviceMonitor:
+      enabled: false
+      namespace: "monitoring"
+elasticsearch:
+  enabled: false
+  metrics:
+    enabled: false
+    serviceMonitor:
+      enabled: false
+      namespace: "monitoring"
+mongodb:
+  enabled: false
+  metrics:
+    enabled: false
+    serviceMonitor:
+      enabled: false
+      namespace: "monitoring"
+postgresqlha:
+  enabled: false
+  metrics:
+    enabled: false
+    serviceMonitor:
+      enabled: false
+      namespace: "monitoring"
+mariadbgal:
+  enabled: true
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      namespace: "monitoring"
