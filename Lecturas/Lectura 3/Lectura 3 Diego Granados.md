@@ -1,44 +1,45 @@
-# Lectura 2: Prometheus & Grafana
+# Lectura 3: Consideraciones en bases de datos NoSQL
 
 ### Diego Granados Retana 2022158363
 
 ### Bases de datos II
 
-### 22 de agosto, 2023
+### 8 de setiembre, 2023
 
 #### Responda las siguientes preguntas:
-##### ¿En qué consisten los datos timeseries?
-Son datos que se registran a lo largo del tiempo (Grafana Labs, s.f.). Usualmente pertenecen a la misma métrica y al mismo conjunto de dimensiones. Se pueden desplegar en tablas, pero lo más útil es usar un gráfico. Usualmente, las mediciones no se actualizan, solo se añaden nuevas. Permiten entender el pasado al mostrar información de cualquier punto en el tiempo. 
-De acuerdo con IBM (2021), hay diferentes tipos de series:
--	Dependiente: Para esta se desea hacer previsiones.
--	Predictora: Ayuda a explicar un objetivo.
--	Evento: Es una serie predictora que se utiliza para tomar en cuenta eventos recurrentes y predecibles.
--	Intervención: Es una serie predictora que se usa para tomar en cuenta incidentes específicos que han ocurrido en el anteriormente.
-##### ¿Qué son métricas?
-Son mediciones numéricas (Grafana Labs, s.f.). Algunos ejemplos pueden ser la cantidad de usuarios que inician sesión, la cantidad de lecturas que se realizan, la cantidad de memoria que se está usando, entre otros. Dicen cuánto existe de algo.
-##### Explique en que consiste la Observabilidad.
-La observabilidad es poder ver el estado interno del sistema con base en los datos que se producen, hacerlo más transparente (Grafana Labs, s.f.). Existen herramientas que nos ayudan a recolectar métricas y mantener una bitácora de todo lo que ocurre en el sistema. Con estos, podemos medir el rendimiento y disponibilidad de nuestro sistema, encontrar errores y ver si las soluciones que implementamos sí estén funcionando. Hay tres pilares fundamentales que son registradas a lo largo del tiempo:
--	Logs: registros de eventos que ocurrieron.
--	Métricas: representaciones numéricas de datos.
--	Rastros o traces: Una cadena de eventos que ocurren en el sistema.
-Existe una diferencia entre la observabilidad y el monitoreo de rendimiento. El monitoreo se enfoca más en recolectar y analizar datos del rendimiento del sistema y su conducta y así revisar si el sistema está funcionando correctamente. La observabilidad se enfoca más en entender cómo los componentes de sistemas complejos interactúan entre sí.
-##### Explique el concepto de dimensiones en datos timeseries.
-Las dimensiones son las características o el contexto en el cual se están midiendo los datos (Grafana Labs, s.f.). En la lectura se menciona un ejemplo con las dimensiones job y device. Esto significa que cada time series fue obtenido en una tarea y dispositivo específicos. Es posible que, si se cambiara el dispositivo, las métricas darían resultados diferentes. Las dimensiones son importantes para estudiar cómo se comporta nuestro sistema con diferentes variables.
-##### ¿Por qué los tags en métricas permiten generar mejores gráficos en Grafana?
-Los tags o labels se utilizan para definir dimensiones en Grafana (Grafana Labs, s.f.). Esto permite agregar el contexto de dónde se obtuvo la información. Además, permiten tener datos de diferentes dimensiones en el mismo gráfico, generando una forma de comparar directamente cómo se diferencian las dimensiones. Los labels se almacenan en pares de llaves y valores.
-##### Suponiendo que se están recolectando datos IoT (Internet of Things) de miles de dispositivos, los mismos generan una métrica cada 15 segundos con el consumo de energía y temperatura, explique:
-###### - ¿Por qué una base de datos relacional no es una buena opción para almacenar esta información?
-Las bases de datos relacionales no están optimizadas para almacenar time series. Es posible que los datos de time series puedan ser almacenados estructuralmente, ya que usualmente tienen una característica identificadora, como el tiempo en que fueron tomadas y al almacenar normalmente datos numéricos, sí es posible construir un esquema. No obstante, en la operación, hay varias desventajas (Grafana Labs, s.f.). Los datos de time series se actualizan o eliminan muy poco, entonces esto permite optimizar el almacenamiento. Puede ser que se almacene un tiempo exacto y a partir de ahí, solo se almacene la diferencia que hay en los siguientes registros a ese tiempo. Como los datos se almacenan en intervalos regulares y cortos, la diferencia va a ser menor, entonces se pueden almacenar las diferencias en menos espacio ya que son números pequeños. Si se almacenara todo el número, habría un desperdicio de espacio porque habría información redundante. Otra razón es que una base de datos relacional no puede soportar la velocidad en la que se insertan datos (Watchel, 2023). Además, algunos datos tienen dimensiones y campos diferentes, entonces no se podrían añadir a la misma tabla rápidamente ya que habría que cambiar el esquema. Por estas razones, existen bases de datos especializadas para time series. Estas aplican estas optimizaciones para mejorar el rendimiento y uso de recursos.
-###### - Dada la naturaleza de datos timeseries, ¿de qué forma la localidad puede ayudarnos a ahorrar dinero?
-La localidad es muy útil porque implica que todos los datos de las mismas dimensiones se almacenan en ubicaciones cercanas. Así, puedo agarrar toda la información que necesito para un gráfico de una vez en lugar de buscar por todo el disco y recolectarla. Eso me ayuda a generar el gráfico más rápido y le evita a la base de datos tener que subir tantas páginas o bloques de información a la memoria, ya que todo estaría en el mismo.
+##### ¿Es posible utilizar una base de datos SQL como una base de datos key-value?, ¿Cómo la implementaría? Comente las implicaciones de rendimiento 
+Yo creo que sí es posible utilizar es posible usar una base de datos SQL como un key-value. Tendría una tabla donde tengo una columna de Id y otra que es un free-text, que puede almacenar cualquier cosa (Golotiuk, 2022). Un ejemplo de una implementación en MySQL puede ser el siguiente.
+
+CREATE TABLE IF NOT EXISTS `mydb`.`table1` (
+  
+  `key` INT NOT NULL,
+  
+  `value` BLOB NOT NULL,
+  
+  PRIMARY KEY (`key `)
+
+ENGINE = InnoDB; 
+
+También el value puede ser con un JSON en lugar de un blob. Un problema que puede tener esta implementación es que gastaría mucho espacio. Si uno necesita almacenar un número pequeño, igual estaría utilizando todo el espacio del blob. Si uno quisiera reducir el almacenamiento, se puede tener una tabla que sea solo para un tipo de datos, pero esto implicaría tener muchas tablas.
+##### ¿En qué consisten los datos polimórficos? Explique la razón por la cual estos son un buen caso de uso en bases de datos documentales.
+Los datos polimórficos son los que pueden tener diferencias entre registros. Las bases de datos documentales son buenas para este tipo de datos porque tiene un esquema flexible y dinámico. En MongoDB se permite tener datos polimórficos en la misma colección (Alger y Coupal, 2022). Aunque los datos pueden tener campos diferentes, sí hay algunos comúnes, entonces se pueden juntos. Por ejemplo, se puede tener una colección de un catálogo de productos. Cada uno tiene características diferentes, pero todos tienen precio, nombre, marca, entre otros. Si quisiéramos realizar una base de datos relacional que almacene la misma información, tendríamos que utilizar el patrón de características variables, lo que implicaría tener una tabla de productos con la información en común, una tabla de características específicas y otra tabla que relacione las características con los productos. Esto haría que las consultas sean sumamente complejas. En una base de datos de key-value, sí podemos almacenar datos polimórficos, pero no la podríamos consultar fácilmente ya que solo se pueden hacer por su key. Una base de datos wide-column sí podría almacenar los datos polimórficos, pero es menos flexible que una base de datos documental, por lo que la documental sigue siendo mejor (MongoDB, s.f.). 
+#### Presente 5 ejemplos de sistemas/casos de uso que podrían soportar consistencia eventual, Explique
+1.	Sistemas distribuidos: Los sistemas distribuidos necesitan tener toda la información sincronizada y este proceso puede ser complejo y largo. Por esta razón, si se necesita que el sistema sea altamente disponible, para evitar que el sistema se detenga cada vez que se necesiten sincronizar los datos, se puede permitir la consistencia eventual, donde algunas réplicas del sistema no van a tener la información completa y consistente (Keboola, 2021).
+2.	Red social: No es necesario poder ver las últimas publicaciones de todas las personas, ya que muy posiblemente las que estén disponible cuando carguemos la página sean más que suficientes para el entretenimiento. Además, la información no es vital para nadie, no es que alguien va a perder dinero si no ve lo más nuevo (Hagar, 2018).
+3.	Internet Domain Name System: Los servidores del DNS no reflejan los más nuevos. Los valores se guardan en la caché y luego se replican en todos los directorios. Puede ser que la página de uno no aparezca inmediatamente, pero eventualmente sí va a aparecer en toda la Internet.
+4.	Agregar un producto al carrito: Plataformas como Amazon muestran la cantidad de productos que quedan disponibles. Puede ser que el número que le aparezca a uno diga que sí hay, pero cuando uno lo va a comprar, ya no. Aunque esto puede ser un inconveniente para el usuario, sería mucho más complicado que apareciera el número exacto disponible ya que se tendría que actualizar constantemente y sería más caro para la plataforma que la pérdida de esa compra, la cual además técnicamente no se perdió porque alguien sí compró el producto.
+5.	Almacenamiento en línea de archivos: Cuando uno crea un archivo que un servicio como OneDrive almacena en la nube, el archivo no va a ser inmediatamente cargado a esta. Esto es debido a que posiblemente el usuario va a modificarlo mucho, como escribir un documento en Word, por lo que si se sube con cada cambio se generaría un desperdicio de recursos al almacenar versiones no muy distintas entre sí. Por lo tanto, es posible que el archivo se suba en intervalos de tiempo constantes o cada vez que se haga un cambio sustancial. De esta forma, si en la máquina local se pierde el archivo, en la nube hay una versión respaldada, que puede no estar completamente actualizada, pero igualmente es mejor que perder el archivo completamente.
+
+#### ¿Por qué es importante que nativamente una base de datos NoSQL implemente un REST API?
+Es muy importante porque el protocolo HTTP es un estándar muy popular y utilizado en una gran cantidad de aplicaciones. Aunque posiblemente es ideal tener drivers propios del lenguaje en el que uno esté trabajando, como Pymongo para Python, si no existe uno, se puede recurrir a los requests HTTP para realizar operaciones en la base de datos. Además, tienen otros beneficios (Bennet, 2023). Se pueden utilizar en aplicaciones de front-end, dan flexibilidad para trabajar con múltiples formatos, uno puede implementar un balanceador de carga para evitar sobrecargar la base de datos (como una cola), añadir nuestra propia lógica de negocios, permiten tener escalabilidad y se integran fácilmente con herramientas de inteligencia de negocios.
+##### ¿Por qué la geolocalización de las bases de datos NoSQL pueden ayudar a mantener leyes de Data sovereignty?
+Data sovereignty se refiere a las leyes aplicables a los datos debido a que están ubicados físicamente en un país (Cloudian, 2022). La geolocalización ayuda a adherirse a las leyes ya que podemos tener datos en diferentes países, entonces tenemos que cumplir las leyes de ahí. Por ejemplo, en la Unión Europea está el General Data Protection Regulation (MongoDB, s.f.). Hay diferentes regulaciones y políticas dependiendo de que si la información está “at rest” o en tránsito. Existen leyes que no permiten que cierta información sea transferida de una ubicación. Uno puede utilizar la geolocalización también para evitar más bien requerimientos legales, ya que como los países tienen diferentes leyes, las empresas pueden utilizar eso en ventaja suya. Por ejemplo, pueden evitar impuestos o simplemente facilitar el rendimiento de una consulta al guardar la información cerca de donde se va a necesitar. Por estas razones, es importante escoger bien la ubicación de dónde se van a almacenar los datos. Tenemos que investigar las restricciones de las posibles ubicaciones que el proveedor de la base de datos nos brinda.
 ### Bibliografía
-IBM. (2021, 17 agosto). Datos de series temporales. IBM.com. Recuperado 5 de agosto de 2023, de https://www.ibm.com/docs/es/spss-modeler/saas?topic=models-time-series-data
-
-What is Prometheus? | Grafana Documentation. (s. f.). Grafana Labs. https://grafana.com/docs/grafana/latest/fundamentals/intro-to-prometheus/
-
-Wachtel, J. (2023, 24 abril). Don’t let time series data break your relational database. The New Stack. https://thenewstack.io/dont-let-time-series-data-break-your-relational-database/#:~:text=Relational%20databases%20can%27t%20handle,reach%20a%20scaling%20inflection%20point.
-
-
-
-
-
+Alger, K. W., & Coupal, D. (2022, 23 septiembre). Building with Patterns: The Polymorphic Pattern | MongoDB. https://www.mongodb.com/developer/products/mongodb/polymorphic-pattern/
+Bennett, T. (2023, 18 mayo). Direct Database Access vs. REST APIs: Pros and Cons for application connectivity - DreamFactory Software- blog. DreamFactory Software- Blog - API Management, Enterprise Integrations, Data Security and More. https://blog.dreamfactory.com/direct-database-access-vs-rest-apis-pros-and-cons-for-application-connectivity/#:~:text=REST%20(representational%20state%20transfer)%20APIs,s)%20users%20need%20to%20access.
+Cloudian. (2022, 19 agosto). Data Sovereignty in the cloud: Key considerations. https://cloudian.com/guides/data-protection/data-sovereignty-in-the-cloud-key-considerations/
+Golotiuk, D. (2022, 5 agosto). Key-value storage on top of MySQL - DataDenys - Medium. Medium. https://medium.com/datadenys/key-value-storage-on-top-of-mysql-7b7e032caa44
+Haldar, D. (2018, 5 agosto). System Design Interview Concepts – Eventual consistency. A CODER’S JOURNEY. https://www.acodersjourney.com/eventual-consistency/
+Keboola. (2021, 20 agosto). What is eventual consistency and why should you care about it? Recuperado 9 de septiembre de 2023, de https://www.keboola.com/blog/eventual-consistency
+MongoDB. (s. f.). GDPR Compliance — MongoDB. https://www.mongodb.com/it-it/products/platform/trust/gdpr
+MongoDB. (s. f.-b). The Top 7 Considerations when Evaluating NoSQL Databases. https://www.mongodb.com/collateral/considerations-when-evaluating-nosql-databases
