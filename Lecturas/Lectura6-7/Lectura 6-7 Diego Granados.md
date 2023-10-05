@@ -1,0 +1,36 @@
+# Lectura 4 y 5: Prometheus & Grafana
+### Diego Granados Retana 2022158363
+### Bases de datos II
+### 5 de octubre, 2023
+### Responda las siguientes preguntas:
+
+#### ¿De qué forma se diferencia el BASE consistency model del ACID?
+ACID es el modelo de consistencia que se utiliza en las bases de datos relacionales (Sasaki et al., 2016). Da un ambiente seguro en el cual operar con los datos. La palabra ACID significa lo siguiente:
+-	Atomicity: Todas las operaciones en una transacción tienen que completarse correctamente o se deben revertir.
+-	Consistent: Luego de que se complete una transacción, la información se mantiene coherente, correcta y clara.
+-	Isolated:  Se modera el acceso a recursos compartidos para que no ocurran inconsistencias en los datos, de esta forma las transacciones parecen correr secuencialmente.
+-	Durable: Los efectos de una transacción perduran en el tiempo.
+El modelo de consistencia ACID implica un sistema sofisticado de locks en los recursos. La mayoría de bases de datos de grafos utilizan ACID.
+El modelo de consistencia BASE tiene menos restricciones para la consistencia y precisión de los datos. Significa:
+-	Basic Availability: La base de datos funciona en la mayoría del tiempo.
+-	Soft State: Las bases de datos y réplicas no necesariamente tienen que ser consistentes siempre.
+-	Eventual Consistency: La base de datos va a ser consistente algún tiempo después.
+El sistema BASE valora la alta disponibilidad mientras que ACID valora consistencia. En BASE, los datos pueden ser consistentes en el futuro o van a haber snapshots consistentes procesados en el pasado. El modelo BASE se usan en almacenamientos agregados, como key-value y documentales.
+#### ¿Explique por qué no es recomendable modelar una base de datos orientada a grafos mediante una base de datos relacional?
+Las bases de datos orientadas a grafos están optimizadas para usar grafos mientras que una base de datos relacional no (Sasaki et al., 2016).  Las tecnologías nativas realizan consultas más rápido, son más escalables, son más eficientes y necesitan menos hardware. Uno puede diseñar bases de datos de grafos con otras bases de datos, como relacionales o NoSQL, pero estas son más lentas que las nativas. Las bases de datos nativas de grafos utilizan adyacencia libre de índices.  Esto quiere decir que cada nodo referencia a sus nodos adyacentes y se almacenan muy cerca entre sí. Cuando se hacen consultas, no hace falta buscar en un índice global, como en un base de datos relacional, ya que cada nodo se podría considerar un índice para sus nodos adyacentes. Los índices globales en las bases de datos relacionales añaden una capa más de complejidad a las búsquedas e inserciones. Las bases de datos relacionales exigen la integridad de los datos más que cualquier otro tipo modelo. Si se quisiera insertar una conexión entre dos objetos, se necesita insertar el registro de la relación y actualizar los objetos involucrados. Las bases de datos relacionales no tienen implementados los algoritmos de grafos, como el algoritmo de Dijkstra y los recorridos en anchura y profundidad. La implementación de estos puede causar que se tenga que buscar por varias ubicaciones para obtener lo que se necesita. Los nodos y relaciones tienen que volverse a formar cada consulta. Finalmente, como las bases de datos relacionales son muy rígidas, no son viables para almacenar los datos no estructuras, interconectas y interrelacionados que se deben manejar hoy en día.
+#### ¿Qué es una base de datos orientada a grafos? Explique casos de uso
+Una base de datos orientada a grafos se enfoca en relaciones (Sasaki et al., 2016). Es muy importante saber cómo los datos que almacenamos se relacionan entre sí. Estas bases de datos son muy rápidas en este tipo de consultas, flexibles, ágiles y escalables. Se basan en grafos. Estos tienen dos elementos, nodos y relaciones (Neo4J, s.f.). Cada nodo representa una entidad y cada relación demuestra cómo se asociación dos entidades. Los modelos de datos son más simples y expresivos que los de una base de datos relacional. Las bases de datos de grafos están diseñadas y optimizadas específicamente para almacenar grafos. Cada nodo apunta a sus adyacentes por medio de las relaciones. Los datos se almacenan como si se escribieran en una pizarra (Neo4J page). No se restringen a un modelo predefinidos. Ayudan a navegar jerarquías y encontrar relaciones escondidas entre elementos distantes. Hay una gran cantidad de casos de uso. Algunos son los siguientes:
+-	Motor de recomendaciones y sistema de recomendaciones de productos: Se puede almacenar la información de las ordenes que un cliente realizó, los productos que están viendo y los productos que han guardado para después (Webber, 2021). Esto nos ayuda a predecir qué recomendar. Por ejemplo, puede ser que un cliente ha comprado varias veces pan y mantequilla juntos en ocasiones diferentes. Por lo tanto, lo próxima vez que añade pan a su orden, podemos recomendarle inmediatamente que añada mantequilla. Este procedimiento se puede expandir a incluir los productos populares comprados en la red social del cliente. Esto quiere decir recomendar también lo que compraron los amigos, familiares o conocidos de la persona y otras personas en la misma demográfica. Las bases de datos de grafos se utilizan en tiendas como Walmart y eBay.
+-	Redes sociales: Como las redes sociales ya son por definición grafos con las relaciones entre personas, estas se pueden almacenar perfectamente en una base de datos orientada a grafos. Aplicaciones como Match.com y Zoosk utilizan este tipo de bases de datos para encontrar compatibilidades entre personas (De Marzi, 2021). Ayudan a que los usuarios puedan crear el perfil más descriptivo posible para que se hagan las mejores parejas.
+-	Inteligencia artificial: Las bases de datos de grafos ayudan a mejorar machine learning y la inteligencia artificial (Neo4J, 2023). El contexto es muy importante para tomar decisiones. Hay cuatro áreas en las que se pueden usar los grafos para dar contexto a las inteligencias artificiales. La primera es grafos de conocimiento o red semántica, que ayudan a que las respuestas sean apropiadas para la situación. Son una red de entidades del mundo real y las relaciones entre ellas. Tienen que estar conectados alrededor de atributos relevantes, ser dinámicos y comprensibles. Segundo, los grafos son más eficientes procesando. Tercero, se pueden hacer extracciones para analizar datos e identificar elementos predictivos. Finalmente, ayudan a dar una explicación de cómo o qué camino está comando la inteligencia artificial para llegar a su decisión. Los grafos se pueden utilizar para el procesamiento del lenguaje natural.
+### Bibliografía
+De Marzi, M. (2021). What Finance Can Learn From Dating Sites. Neo4J. Recuperado 5 de octubre de 2023, de https://go.neo4j.com/what-finance-can-learn-from-dating-sites-lp.html?ref=social-network-2
+
+Neo4J. (2023). Artificial Intelligence  & Graph Technology  Enhancing AI with Context &  Connections.
+
+Sasaki, B. M., Chao, J., & Howard, R. (2016). Graph Databases for Beginners. Neo4J.
+
+Webber, J. (2021). Powering Real-Time  Recommendations with Graph Database Technology.
+
+What is a graph Database? - Developer guides. (s. f.). Neo4j Graph Data Platform. https://neo4j.com/developer/graph-database/
+
