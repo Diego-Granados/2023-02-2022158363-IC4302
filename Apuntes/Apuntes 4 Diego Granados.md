@@ -10,7 +10,7 @@
 
 Una aplicación normalmente se organiza en capas. Hace mucho tiempo se usaba el Model View Controller, el cual especifica tres capas que tienen las aplicaciones.
 Modelo: Parte de base de datos.
-View: Ui
+View: UI
 Controlador: Business Logic
 
 Ahora las aplicaciones han evolucionado en muchas capas, y aparecieron los web services y restful apis, etc.
